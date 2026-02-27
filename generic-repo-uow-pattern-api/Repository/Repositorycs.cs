@@ -1,18 +1,22 @@
-﻿using generic_repo_pattern_api.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using generic_repo_uow_pattern_api.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace generic_repo_pattern_api.Repository
+namespace generic_repo_uow_pattern_api.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly DbSet<T> _dbSet;
-        private readonly MyDbContext _myDbContext;
+        protected DbSet<T> _dbSet;
+        private MyDbContext _myDbContext;
+
         public Repository(MyDbContext myDbContext)
         {
-            _dbSet = myDbContext.Set<T>();
             _myDbContext = myDbContext;
-
+            _dbSet = myDbContext.Set<T>();
         }
+
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
@@ -36,9 +40,14 @@ namespace generic_repo_pattern_api.Repository
             return await _dbSet.FindAsync(id);
         }
 
+        public void SetDbContext(MyDbContext myDbContext)
+        {
+            _myDbContext = myDbContext;
+            _dbSet = myDbContext.Set<T>();
+        }
+
         public async Task UpdateAsync(T entity)
         {
-            _dbSet.Attach(entity);
             _myDbContext.Entry(entity).State = EntityState.Modified;
             await _myDbContext.SaveChangesAsync();
         }

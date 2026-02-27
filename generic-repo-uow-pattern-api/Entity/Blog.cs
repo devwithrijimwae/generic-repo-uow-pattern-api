@@ -1,4 +1,4 @@
-﻿namespace generic_repo_pattern_api.Model.Entity
+﻿namespace generic_repo_uow_pattern_api.Entity
 {
     public class Blog
     {

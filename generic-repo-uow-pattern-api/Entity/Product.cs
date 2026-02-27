@@ -1,4 +1,4 @@
-﻿namespace generic_repo_pattern_api.Model.Entity
+﻿namespace generic_repo_uow_pattern_api.Entity
 {
     public class Product
     {
@@ -6,6 +6,7 @@
         public string? ProductName { get; set; }
         public decimal Price { get; set; }
         //Navigation property 
-        public List<Order> Orders { get; set; } = new List<Order>();
+        public  List<Order>? Orders { get; set; }
+        public int ProductId { get; internal set; }
     }
 }

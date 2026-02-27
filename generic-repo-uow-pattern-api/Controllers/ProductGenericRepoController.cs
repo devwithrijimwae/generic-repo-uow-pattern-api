@@ -1,10 +1,8 @@
-﻿using generic_repo_pattern_api.Model.Entity;
-using generic_repo_pattern_api.Repository;
-using Microsoft.AspNetCore.Http;
+﻿using generic_repo_uow_pattern_api.Entity;
+using generic_repo_uow_pattern_api.Repository;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
-namespace generic_repo_pattern_api.Controllers
+namespace generic_repo_uow_pattern_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -42,6 +40,7 @@ namespace generic_repo_pattern_api.Controllers
                 ProductName = product.ProductName,
                 Price = product.Price
             };
+
             var createdProduct = await _productRepository.AddAsync(product);
             return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
         }

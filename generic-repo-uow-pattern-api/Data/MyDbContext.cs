@@ -1,9 +1,7 @@
-﻿using generic_repo_pattern_api.Model.Entity;
+﻿using generic_repo_uow_pattern_api.Entity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
-namespace generic_repo_pattern_api.Data
+namespace generic_repo_uow_pattern_api.Data
 {
     public class MyDbContext : DbContext
     {
