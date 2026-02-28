@@ -8,21 +8,16 @@ namespace generic_repo_uow_pattern_api.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
         private MyDbContext _myDbContext;
+
 
         public Repository(MyDbContext myDbContext)
         {
-            _myDbContext = myDbContext;
             _dbSet = myDbContext.Set<T>();
+            _myDbContext = myDbContext;
         }
 
-        public async Task<T> AddAsync(T entity)
-        {
-            await _dbSet.AddAsync(entity);
-            await _myDbContext.SaveChangesAsync();
-            return entity;
-        }
 
         public async Task DeleteAsync(T entity)
         {
@@ -35,21 +30,35 @@ namespace generic_repo_uow_pattern_api.Repository
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public void SetDbContext(MyDbContext myDbContext)
-        {
-            _myDbContext = myDbContext;
-            _dbSet = myDbContext.Set<T>();
-        }
+
 
         public async Task UpdateAsync(T entity)
         {
+            _dbSet.Attach(entity);
             _myDbContext.Entry(entity).State = EntityState.Modified;
             await _myDbContext.SaveChangesAsync();
+        }
+
+        public async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _myDbContext.SaveChangesAsync();
+            return entity;
+        }
+
+        Task IRepository<T>.AddAsync(T entity)
+        {
+            return AddAsync(entity);
+        }
+
+        public void SetDbContext(MyDbContext myDbcontext)
+        {
+            _myDbContext = myDbcontext;
         }
     }
 }

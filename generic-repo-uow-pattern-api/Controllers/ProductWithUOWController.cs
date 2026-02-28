@@ -1,59 +1,71 @@
 ﻿using generic_repo_uow_pattern_api.Entity;
+using generic_repo_uow_pattern_api.Model;
 using generic_repo_uow_pattern_api.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-[Route("api/[controller]")]
-[ApiController]
-public class ProductWithUOWController : ControllerBase
+namespace generic_repo_uow_pattern_api.Controllers
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public ProductWithUOWController(IUnitOfWork unitOfWork)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductWithUOWController : ControllerBase
     {
-        _unitOfWork = unitOfWork;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get()
-    {
-        var result = await _unitOfWork.GetRepository<Product>().GetAllAsync();
-
-        return Ok(result);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Product product)
-    {
-        try
+        private readonly IUnitOfWork _unitOfWork;
+        public ProductWithUOWController(IUnitOfWork unitOfWork)
         {
-            using var transaction = _unitOfWork.BeginTransactionAsync();
-
-            var productionEntity = new Product
-            {
-                Price = product.Price,
-                ProductName = product.ProductName
-            };
-           var productResult = await _unitOfWork.GetRepository<Product>().AddAsync(productionEntity);
-               await _unitOfWork.SaveChangesAsync();
-
-            var orderEntity = new Order
-            {
-                OrderDate = DateTime.Now,
-                ProductId = productResult.ProductId
-            };
-            await _unitOfWork.GetRepository<Order>().AddAsync(orderEntity);
-            await _unitOfWork.SaveChangesAsync();
-
-            await _unitOfWork.CommitAsync();
-
-            return StatusCode((int)HttpStatusCode.Created, new { Id = productResult.ProductId }); 
+            _unitOfWork = unitOfWork;
         }
-        catch (Exception)
-        {
-            await _unitOfWork.RollbackAsync();
-            throw;
 
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var result = await _unitOfWork.GetRepository<Product>().GetAllAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("productbyname")]
+        public async Task<IActionResult> GetByName(string productName)
+        {
+            var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>();
+            var result = await productRepository.GetProductsByName(productName);
+            //var product = await _unitOfWork.ProductRepository.GetProductsByName(productName);
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Post(ProductRequest product)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var productEntity = new Product
+                {
+                    Price = product.Price,
+                    ProductName = product.ProductName
+                };
+
+                await _unitOfWork.GetRepository<Product>().AddAsync(productEntity);
+                await _unitOfWork.SaveChangesAsync();
+
+                var orderEntity = new Order
+                {
+                    OrderDate = DateTime.UtcNow,
+                    ProductId = productEntity.ProductId
+                };
+                await _unitOfWork.GetRepository<Order>().AddAsync(orderEntity);
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitAsync();
+
+                return StatusCode((int)HttpStatusCode.Created, new { Id = orderEntity.ProductId });
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

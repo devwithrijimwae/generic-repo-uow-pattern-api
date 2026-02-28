@@ -2,11 +2,12 @@
 {
     public class Product
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string? ProductName { get; set; }
         public decimal Price { get; set; }
-        //Navigation property 
-        public  List<Order>? Orders { get; set; }
-        public int ProductId { get; internal set; }
+
+        //Navigation property
+        public List<Order>? Orders { get; set; }
+
     }
 }

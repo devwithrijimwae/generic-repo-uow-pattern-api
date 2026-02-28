@@ -1,4 +1,5 @@
 ﻿using generic_repo_uow_pattern_api.Entity;
+using generic_repo_uow_pattern_api.Model;
 using generic_repo_uow_pattern_api.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,69 +7,69 @@ namespace generic_repo_uow_pattern_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductGenericRepoController : ControllerBase
+    public class ProductWithGenericRepoController : ControllerBase
     {
-        private readonly IRepository<Product> _productRepository;
-        public ProductGenericRepoController(IRepository<Product> productRepository)
-        {
-            _productRepository = productRepository;
+        private readonly IRepository<Product> productRepository;
 
+        public ProductWithGenericRepoController(IRepository<Product> productRepository)
+        {
+            this.productRepository = productRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var product = await _productRepository.GetAllAsync();
-            return Ok(product);
+            var products = await productRepository.GetAllAsync();
+            return Ok(products);
         }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
             return Ok(product);
-
         }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
         {
-            var productEntry = new Product()
+            var newProduct = new Product
             {
                 ProductName = product.ProductName,
                 Price = product.Price
             };
-
-            var createdProduct = await _productRepository.AddAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+            await productRepository.AddAsync(newProduct);
+            return CreatedAtAction(nameof(GetProductById), new { id = newProduct.ProductId }, newProduct);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductRequest product)
         {
-            var productEntry = await _productRepository.GetByIdAsync(id);
-            if (productEntry == null)
+            var existingProduct = await productRepository.GetByIdAsync(id);
+            if (existingProduct == null)
             {
                 return NotFound();
             }
-            productEntry.ProductName = product.ProductName;
-            productEntry.Price = product.Price;
-            await _productRepository.UpdateAsync(productEntry);
+            existingProduct.ProductName = product.ProductName;
+            existingProduct.Price = product.Price;
+            await productRepository.UpdateAsync(existingProduct);
             return NoContent();
-
         }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
+            var existingProduct = await productRepository.GetByIdAsync(id);
+            if (existingProduct == null)
             {
                 return NotFound();
             }
-            await _productRepository.DeleteAsync(product);
+            await productRepository.DeleteAsync(existingProduct);
             return NoContent();
         }
     }
 }
-
