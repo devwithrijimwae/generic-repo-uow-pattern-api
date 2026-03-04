@@ -23,17 +23,33 @@ namespace generic_repo_uow_pattern_api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("productbyname")]
+         [HttpGet("productbyname")]
         public async Task<IActionResult> GetByName(string productName)
         {
             var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>();
-            var result = await productRepository.GetProductsByName(productName);
-            //var product = await _unitOfWork.ProductRepository.GetProductsByName(productName);
-            return Ok(result);
+            var product = await _unitOfWork.ProductRepository.GetProductsbyName(productName);
+
+            return Ok(product);
         }
 
-
-        [HttpPost]
+        [HttpGet("ProductPagging")]
+        public async Task<IActionResult> GetProductPagging(int page = 1, int pageSize = 10, string searchTerm = null)
+        {
+            var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>();
+            var results = await productRepository.GetAllProductsWithPagging(page, pageSize, searchTerm);
+            var metadata = new
+            {
+                results.TotalCount,
+                results.PageSize,
+                results.CurrentPage,
+                results.TotalPages,
+                results.HasNext,
+                results.HasPrevious,
+                results
+            };
+            return Ok(metadata);
+        }
+            [HttpPost]
         public async Task<IActionResult> Post(ProductRequest product)
         {
             try

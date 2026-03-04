@@ -12,7 +12,7 @@ using generic_repo_uow_pattern_api.Data;
 namespace generic_repo_uow_pattern_api.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20260225120133_Initial")]
+    [Migration("20260301173155_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace generic_repo_uow_pattern_api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("generic_repo_pattern_api.Model.Entity.Blog", b =>
+            modelBuilder.Entity("generic_repo_uow_pattern_api.Entity.Blog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,7 +44,7 @@ namespace generic_repo_uow_pattern_api.Migrations
                     b.ToTable("Blogs");
                 });
 
-            modelBuilder.Entity("generic_repo_pattern_api.Model.Entity.Order", b =>
+            modelBuilder.Entity("generic_repo_uow_pattern_api.Entity.Order", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
@@ -65,13 +65,13 @@ namespace generic_repo_uow_pattern_api.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("generic_repo_pattern_api.Model.Entity.Product", b =>
+            modelBuilder.Entity("generic_repo_uow_pattern_api.Entity.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -79,23 +79,23 @@ namespace generic_repo_uow_pattern_api.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("generic_repo_pattern_api.Model.Entity.Order", b =>
+            modelBuilder.Entity("generic_repo_uow_pattern_api.Entity.Order", b =>
                 {
-                    b.HasOne("generic_repo_pattern_api.Model.Entity.Product", "Products")
+                    b.HasOne("generic_repo_uow_pattern_api.Entity.Product", "Product")
                         .WithMany("Orders")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("generic_repo_pattern_api.Model.Entity.Product", b =>
+            modelBuilder.Entity("generic_repo_uow_pattern_api.Entity.Product", b =>
                 {
                     b.Navigation("Orders");
                 });

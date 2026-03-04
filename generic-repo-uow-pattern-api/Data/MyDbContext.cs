@@ -9,7 +9,7 @@ namespace generic_repo_uow_pattern_api.Data
         public DbSet<Order> Orders { get; set; }
 
         public DbSet<Blog> Blogs { get; set; }
-        public MyDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public MyDbContext(DbContextOptions<MyDbContext> dbContextOptions) : base(dbContextOptions)
         {
 
         }
@@ -17,7 +17,7 @@ namespace generic_repo_uow_pattern_api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>()
-            .HasOne(o => o.Products)
+            .HasOne(o => o.Product)
             .WithMany(p => p.Orders)
             .HasForeignKey(o => o.ProductId);
 

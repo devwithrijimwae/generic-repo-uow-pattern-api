@@ -3,12 +3,11 @@
     public class Order
     {
         public int OrderId { get; set; }
-
         public int ProductId { get; set; }
-
+        //Foreign Key
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
         // Navigation property
-        public Product Products { get; set; } = null!;
+        public Product Product { get; set; } = null!;
     }
 }
