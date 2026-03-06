@@ -25,6 +25,14 @@ namespace generic_repo_uow_pattern_api.Controllers
             return Ok(products);
         }
 
+        [HttpGet("ProductsWithPagging")]
+        public async Task<IActionResult> ProductsWithPagging(int page = 1, int pageSize = 10, string searchTerm = null)
+        {
+            var products = await productRepository.GetAllAsync();
+            var prudctdto = _mapper.Map<List<ProductRequest>>(products);
+            return Ok(products);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
@@ -34,6 +42,7 @@ namespace generic_repo_uow_pattern_api.Controllers
             {
                 return NotFound();
             }
+            var productDto = _mapper.Map<ProductRequest>(product);
             return Ok(product);
         }
 

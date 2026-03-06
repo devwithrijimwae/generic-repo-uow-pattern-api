@@ -24,6 +24,7 @@ var mapperConfig = new MapperConfiguration(cfg =>
 });
 
 var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks()
