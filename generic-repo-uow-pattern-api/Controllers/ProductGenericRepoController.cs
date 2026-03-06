@@ -1,4 +1,5 @@
-﻿using generic_repo_uow_pattern_api.Entity;
+﻿using AutoMapper;
+using generic_repo_uow_pattern_api.Entity;
 using generic_repo_uow_pattern_api.Model;
 using generic_repo_uow_pattern_api.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,11 @@ namespace generic_repo_uow_pattern_api.Controllers
     public class ProductWithGenericRepoController : ControllerBase
     {
         private readonly IRepository<Product> productRepository;
-
-        public ProductWithGenericRepoController(IRepository<Product> productRepository)
+        private readonly IMapper _mapper;
+        public ProductWithGenericRepoController(IRepository<Product> productRepository, IMapper mapper)
         {
             this.productRepository = productRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -27,6 +29,7 @@ namespace generic_repo_uow_pattern_api.Controllers
         public async Task<IActionResult> GetProductById(int id)
         {
             var product = await productRepository.GetByIdAsync(id);
+            var prudctdto = _mapper.Map<List<ProductRequest>>(product);
             if (product == null)
             {
                 return NotFound();
@@ -37,11 +40,12 @@ namespace generic_repo_uow_pattern_api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
         {
-            var newProduct = new Product
-            {
-                ProductName = product.ProductName,
-                Price = product.Price
-            };
+            //var newProduct = new Product
+            //{
+            //    ProductName = product.ProductName,
+            //    Price = product.Price
+            //};
+            var newProduct = _mapper.Map<Product>(product);
             await productRepository.AddAsync(newProduct);
             return CreatedAtAction(nameof(GetProductById), new { id = newProduct.ProductId }, newProduct);
         }
@@ -54,8 +58,9 @@ namespace generic_repo_uow_pattern_api.Controllers
             {
                 return NotFound();
             }
-            existingProduct.ProductName = product.ProductName;
-            existingProduct.Price = product.Price;
+            //existingProduct.ProductName = product.ProductName;
+            //existingProduct.Price = product.Price;
+            _mapper.Map(product, existingProduct);
             await productRepository.UpdateAsync(existingProduct);
             return Ok(existingProduct);
         }

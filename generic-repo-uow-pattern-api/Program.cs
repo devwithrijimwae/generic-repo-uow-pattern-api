@@ -1,5 +1,7 @@
+using AutoMapper;
 using generic_repo_uow_pattern_api.CustomHealthCheck;
 using generic_repo_uow_pattern_api.Data;
+using generic_repo_uow_pattern_api.MapperProfile;
 using generic_repo_uow_pattern_api.Repository;
 using HealthChecks.UI.Client;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,14 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(typeof(YourMappingProfile)); 
+});
+
+var mapper = mapperConfig.CreateMapper();
+
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks()
     .AddCheck<ApiHealthCheck>(nameof(ApiHealthCheck))
@@ -28,7 +38,7 @@ builder.Services.AddControllers()
 .AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-});
+});  
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
