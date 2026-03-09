@@ -7,16 +7,20 @@ namespace generic_repo_uow_pattern_api.Repository
     {
         private readonly MyDbContext _myDbContext;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<Type, object> repositories;
+        private readonly Dictionary<Type, object> _repositories;
         public IProductRepository ProductRepository { get; }
+
         private IDbContextTransaction _transaction;
+
         public UnitOfWork(MyDbContext myDbContext, IServiceProvider serviceProvider)
         {
             _myDbContext = myDbContext;
             _serviceProvider = serviceProvider;
-            repositories = new Dictionary<Type, object>();
+            _repositories = new Dictionary<Type, object>();
             ProductRepository = new ProductRepository(_myDbContext);
+
         }
+
         public async Task BeginTransactionAsync()
         {
             _transaction = await _myDbContext.Database.BeginTransactionAsync();
@@ -46,9 +50,6 @@ namespace generic_repo_uow_pattern_api.Repository
             GC.SuppressFinalize(this);
         }
         private bool disposed = false;
-
-
-
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -63,12 +64,12 @@ namespace generic_repo_uow_pattern_api.Repository
 
         public IRepository<T> GetRepository<T>() where T : class
         {
-            if (repositories.ContainsKey(typeof(T)))
+            if (_repositories.ContainsKey(typeof(T)))
             {
-                return repositories[typeof(T)] as IRepository<T>;
+                return _repositories[typeof(T)] as IRepository<T>;
             }
             var repository = new Repository<T>(_myDbContext);
-            repositories.Add(typeof(T), repository);
+            _repositories.Add(typeof(T), repository);
             return repository;
         }
 
@@ -90,21 +91,19 @@ namespace generic_repo_uow_pattern_api.Repository
 
             if (repository == null)
             {
-                throw new InvalidOperationException($"Failed to get repository of type {typeof(TRepository)} from the service provider.");
+                throw new InvalidOperationException($"Failed to get repository of type {typeof(TRepository)}");
             }
 
-            //Set the DbContext
             if (repository is IRepository<TEntity> genericRepository)
             {
                 genericRepository.SetDbContext(_myDbContext);
             }
             else
             {
-                throw new InvalidOperationException($"The repository of type {typeof(TRepository)} does not inherit from Repository<TEntity>.");
+                throw new InvalidOperationException($"Repository of type {typeof(TRepository)} does not implement IRepository<TEntity>.");
             }
+
             return repository;
         }
-
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using generic_repo_uow_pattern_api.Entity;
-using generic_repo_uow_pattern_api.Model;
+using generic_repo_uow_pattern_api.Mode;
 
 namespace generic_repo_uow_pattern_api.MapperProfile
 {

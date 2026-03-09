@@ -1,5 +1,6 @@
 ﻿using generic_repo_uow_pattern_api.Common;
 using generic_repo_uow_pattern_api.Entity;
+using generic_repo_uow_pattern_api.Specifications;
 
 namespace generic_repo_uow_pattern_api.Repository
 {

@@ -1,4 +1,4 @@
-﻿namespace generic_repo_uow_pattern_api.Model
+﻿namespace generic_repo_uow_pattern_api.Mode
 {
     public class ProductRequest
     {

@@ -1,5 +1,5 @@
 ﻿using generic_repo_uow_pattern_api.Entity;
-using generic_repo_uow_pattern_api.Model;
+using generic_repo_uow_pattern_api.Mode;
 using generic_repo_uow_pattern_api.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

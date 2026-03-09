@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using generic_repo_uow_pattern_api.Entity;
+using generic_repo_uow_pattern_api.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 

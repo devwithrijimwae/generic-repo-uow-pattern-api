@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
 namespace generic_repo_uow_pattern_api.Controllers
 {
     [Route("api/[controller]")]
@@ -22,7 +21,6 @@ namespace generic_repo_uow_pattern_api.Controllers
         public ActionResult GetTimeoutException()
         {
             throw new TimeoutException();
-            return Ok();
         }
 
     }
